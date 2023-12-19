@@ -14,7 +14,7 @@ from src.constants import (
 if TYPE_CHECKING:
     from .level_scene import LevelScene
 CHARACTER_ACTION_MENU_ID = "character_action"
-def click(scene: 'LevelScene', button: int, position: Position,EntityTurn,LevelStatusㄊ) -> QuitActionKind:
+def click(scene: 'LevelScene', button: int, position: Position,EntityTurn,LevelStatus) -> QuitActionKind:
         """
         Handle the triggering of a click event.
 

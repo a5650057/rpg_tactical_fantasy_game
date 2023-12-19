@@ -11,7 +11,7 @@ from src.scenes.start_scene import StartScene
 from src.services import menu_creator_manager
 from src.services.load_from_xml_manager import parse_item_file
 from tests.tools import minimal_setup_for_game
-
+from src.scenes.InputHandler import *
 
 class TestLevel(unittest.TestCase):
     @classmethod
@@ -126,7 +126,7 @@ class TestLevel(unittest.TestCase):
         self.assertTrue(item in receiver_player.items)
 
         # Cancel active player turn
-        self.level.right_click()
+        right_click(self.level)
 
         self.assertTrue(item in active_player.items)
         self.assertFalse(item in receiver_player.items)
@@ -162,7 +162,7 @@ class TestLevel(unittest.TestCase):
         self.assertFalse(item in sender_player.items)
 
         # Cancel active player turn
-        self.level.right_click()
+        right_click(self.level)
 
         self.assertFalse(item in active_player.items)
         self.assertTrue(item in sender_player.items)
@@ -204,7 +204,7 @@ class TestLevel(unittest.TestCase):
         self.assertTrue(second_item in trade_partner_player.items)
 
         # Cancel active player turn
-        self.level.right_click()
+        right_click(self.level)
 
         self.assertFalse(item in active_player.items)
         self.assertTrue(item in trade_partner_player.items)
@@ -265,7 +265,7 @@ class TestLevel(unittest.TestCase):
                 [],
             )
         )
-        self.level.right_click()
+        right_click(self.level)
 
         self.assertTrue(item in active_player.items)
         self.assertFalse(item in trade_partner_player.items)

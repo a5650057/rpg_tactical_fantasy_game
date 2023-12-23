@@ -1149,9 +1149,9 @@ class LevelScene(Scene):
         # Check if player tries to trade with another player
         elif isinstance(target, Player):
             self.menu_manager.open_menu(
-                menu_creator_manager.create_trade_menu(
+                menu_creator_manager.create_trade_menu(self,
                     {
-                        "interact_item": self.interact_trade_item,
+                        "interact_item": interact_trade_item,
                         "send_gold": self.send_gold,
                     },
                     self.selected_player,
@@ -1632,38 +1632,6 @@ class LevelScene(Scene):
                 self.possible_interactions.append(entity.position)
 
    
-
-    def interact_trade_item(
-        self,
-        item: Item,
-        item_button: Button,
-        players: Sequence[Player],
-        is_first_player_owner: bool,
-    ) -> None:
-        """
-        Handle the interaction with an item from player inventory or equipment during a trade
-
-        Keyword arguments:
-        item -- the concerned item
-        button_position -- the position of the button representing the item on interface
-        players -- the players involved in the trade
-        is_first_player_owner -- a boolean indicating if the player who initiated the trade is the
-        owner of the item
-        """
-        self.selected_item = item
-        self.menu_manager.open_menu(
-            menu_creator_manager.create_trade_item_menu(
-                {
-                    "info_item": self.open_selected_item_description,
-                    "trade_item": self.trade_item,
-                },
-                item_button.position,
-                item,
-                players,
-                is_first_player_owner,
-            ),
-        )
-
     def trade_item(
         self, first_player: Player, second_player: Player, is_first_player_owner: bool
     ) -> None:
@@ -1698,9 +1666,9 @@ class LevelScene(Scene):
             # Remove item from owner inventory according to index
             owner.remove_item(self.selected_item)
 
-            new_trade_menu = menu_creator_manager.create_trade_menu(
+            new_trade_menu = menu_creator_manager.create_trade_menu(self,
                 {
-                    "interact_item": self.interact_trade_item,
+                    "interact_item": interact_trade_item,
                     "send_gold": self.send_gold,
                 },
                 first_player,
@@ -1754,9 +1722,9 @@ class LevelScene(Scene):
         self.traded_gold.append([value, sender, receiver])
         self.menu_manager.close_active_menu()
         self.menu_manager.open_menu(
-            menu_creator_manager.create_trade_menu(
+            menu_creator_manager.create_trade_menu(self,
                 {
-                    "interact_item": self.interact_trade_item,
+                    "interact_item": interact_trade_item,
                     "send_gold": self.send_gold,
                 },
                 first_player,

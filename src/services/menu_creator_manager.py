@@ -243,7 +243,7 @@ def create_equipment_menu(level,
     )
 
 
-def create_trade_menu(
+def create_trade_menu(level,
     buttons_callback: dict[str, Callable], first_player: Player, second_player: Player
 ) -> InfoBox:
     """
@@ -284,7 +284,7 @@ def create_trade_menu(
                 )
                 item_button.callback = lambda button=item_button, item_reference=items[
                     i * 2 + j
-                ], owner=owner_i: buttons_callback["interact_item"](
+                ], owner=owner_i: buttons_callback["interact_item"](level,
                     item_reference,
                     button,
                     [first_player, second_player],

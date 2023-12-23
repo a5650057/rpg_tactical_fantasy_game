@@ -15,6 +15,7 @@ from pygamepopup.menu_manager import MenuManager
 from pygamepopup.components import BoxElement, Button, TextElement, InfoBox
 from pygamepopup.components.image_button import ImageButton
 from .InputHandler import *
+from .ItemHandler import *
 from src.scenes.scene import QuitActionKind
 
 from src.constants import (
@@ -942,7 +943,7 @@ class LevelScene(Scene):
             text_color=BLACK,
         )
         item_element.callback = (
-            lambda button=item_element, item_reference=item: self.interact_item(
+            lambda button=item_element, item_reference=item: interact_item(self,
                 item_reference, button, is_equipped=False
             )
         )
@@ -1594,7 +1595,7 @@ class LevelScene(Scene):
         """
         equipments = list(self.selected_player.equipments)
         self.menu_manager.open_menu(
-            menu_creator_manager.create_equipment_menu(self.interact_item, equipments),
+            menu_creator_manager.create_equipment_menu(self,interact_item, equipments),
         )
         pygame.mixer.Sound.play(self.armor_sfx)
 
@@ -1610,8 +1611,8 @@ class LevelScene(Scene):
             list(self.selected_player.items) + [None] * free_spaces
         )
         self.menu_manager.open_menu(
-            menu_creator_manager.create_inventory_menu(
-                self.interact_item, items, self.selected_player.gold
+            menu_creator_manager.create_inventory_menu(self,
+                interact_item, items, self.selected_player.gold
             )
         )
         pygame.mixer.Sound.play(self.inventory_sfx)
@@ -1630,30 +1631,7 @@ class LevelScene(Scene):
             if isinstance(entity, entity_kind):
                 self.possible_interactions.append(entity.position)
 
-    def interact_item(self, item: Item, item_button: Button, is_equipped: bool) -> None:
-        """
-        Handle the interaction with an item from player inventory or equipment
-
-        Keyword arguments:
-        item -- the concerned item
-        button_position -- the position of the button representing the item on interface
-        is_equipped -- a boolean indicating if the item is equipped or not
-        """
-        self.selected_item = item
-        self.menu_manager.open_menu(
-            menu_creator_manager.create_item_menu(
-                {
-                    "info_item": self.open_selected_item_description,
-                    "throw_item": self.throw_selected_item,
-                    "use_item": self.use_selected_item,
-                    "unequip_item": self.unequip_selected_item,
-                    "equip_item": self.equip_selected_item,
-                },
-                item_button.get_rect(),
-                item,
-                is_equipped=is_equipped,
-            )
-        )
+   
 
     def interact_trade_item(
         self,
@@ -1798,7 +1776,7 @@ class LevelScene(Scene):
             self.selected_player.remove_equipment(self.selected_item)
             equipments = list(self.selected_player.equipments)
             new_items_menu = menu_creator_manager.create_equipment_menu(
-                self.interact_item, equipments
+                self,interact_item, equipments
             )
         else:
             self.selected_player.remove_item(self.selected_item)
@@ -1808,8 +1786,8 @@ class LevelScene(Scene):
             items: list[Optional[Item]] = (
                 list(self.selected_player.items) + [None] * free_spaces
             )
-            new_items_menu = menu_creator_manager.create_inventory_menu(
-                self.interact_item, items, self.selected_player.gold
+            new_items_menu = menu_creator_manager.create_inventory_menu(self,
+                interact_item, items, self.selected_player.gold
             )
         # Refresh the inventory menu
         self.menu_manager.replace_given_menu(INVENTORY_MENU_ID, new_items_menu)
@@ -1906,8 +1884,8 @@ class LevelScene(Scene):
             result_message = STR_THE_ITEM_HAS_BEEN_UNEQUIPPED
 
             # Update equipment screen content
-            new_equipment_menu = menu_creator_manager.create_equipment_menu(
-                self.interact_item, self.selected_player.equipments
+            new_equipment_menu = menu_creator_manager.create_equipment_menu(self,
+                interact_item, self.selected_player.equipments
             )
             # Update the inventory menu (i.e. first menu backward)
             self.menu_manager.close_active_menu()
@@ -1999,8 +1977,8 @@ class LevelScene(Scene):
         items: list[Optional[Item]] = (
             list(self.selected_player.items) + [None] * free_spaces
         )
-        new_inventory_menu = menu_creator_manager.create_inventory_menu(
-            self.interact_item, items, self.selected_player.gold
+        new_inventory_menu = menu_creator_manager.create_inventory_menu(self,
+            interact_item, items, self.selected_player.gold
         )
         # Update inventory menu
         self.menu_manager.replace_given_menu(INVENTORY_MENU_ID, new_inventory_menu)

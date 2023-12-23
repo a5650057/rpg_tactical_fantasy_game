@@ -128,6 +128,7 @@ def create_shop_menu(
 
 
 def create_inventory_menu(
+        level,
     interaction_callback: Callable,
     items: Sequence[Item],
     gold: int,
@@ -162,13 +163,13 @@ def create_inventory_menu(
         )
         if is_to_sell:
             item_button.callback = (
-                lambda button=item_button, item_reference=item: interaction_callback(
+                lambda button=item_button, item_reference=item: interaction_callback(level,
                     item_reference, button
                 )
             )
         else:
             item_button.callback = (
-                lambda button=item_button, item_reference=item: interaction_callback(
+                lambda button=item_button, item_reference=item: interaction_callback(level,
                     item_reference, button, is_equipped=False
                 )
             )
@@ -201,7 +202,7 @@ def create_inventory_menu(
     )
 
 
-def create_equipment_menu(
+def create_equipment_menu(level,
     interaction_callback: Callable, equipments: Sequence[Equipment]
 ) -> InfoBox:
     """
@@ -230,7 +231,7 @@ def create_equipment_menu(
                 background_path="imgs/interface/item_frame.png",
                 text_color=BLACK,
             )
-            element.callback = lambda equipment_reference=equipment, button_linked=element: interaction_callback(
+            element.callback = lambda equipment_reference=equipment, button_linked=element: interaction_callback(level,
                 equipment_reference, button_linked, is_equipped=True
             )
             row.append(element)
@@ -1450,7 +1451,7 @@ def create_choose_language_menu(buttons_callback: Callable) -> InfoBox:
         ],
         [
             Button(
-                title="中文简体",
+                title="CHINESE",
                 font=fonts["LANGUAGE_FONT"],
                 callback=lambda: buttons_callback("zh_cn"),
             )

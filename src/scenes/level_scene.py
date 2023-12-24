@@ -1732,50 +1732,8 @@ class LevelScene(Scene):
             )
         )
 
-    def throw_selected_item(self) -> None:
-        """
-        Remove the selected item from player inventory/equipment
-        """
-        self.menu_manager.close_active_menu()
-        # Remove item from inventory/equipment according to the index
-        if isinstance(
-            self.selected_item, Equipment
-        ) and self.selected_player.has_exact_equipment(self.selected_item):
-            self.selected_player.remove_equipment(self.selected_item)
-            equipments = list(self.selected_player.equipments)
-            new_items_menu = menu_creator_manager.create_equipment_menu(
-                self,interact_item, equipments
-            )
-        else:
-            self.selected_player.remove_item(self.selected_item)
-            free_spaces: int = self.selected_player.nb_items_max - len(
-                self.selected_player.items
-            )
-            items: list[Optional[Item]] = (
-                list(self.selected_player.items) + [None] * free_spaces
-            )
-            new_items_menu = menu_creator_manager.create_inventory_menu(self,
-                interact_item, items, self.selected_player.gold
-            )
-        # Refresh the inventory menu
-        self.menu_manager.replace_given_menu(INVENTORY_MENU_ID, new_items_menu)
-        grid_elements = [
-            [
-                TextElement(
-                    STR_ITEM_HAS_BEEN_THROWN_AWAY,
-                    font=fonts["ITEM_DESC_FONT"],
-                    margin=(20, 0, 20, 0),
-                )
-            ]
-        ]
-        self.menu_manager.open_menu(
-            InfoBox(
-                str(self.selected_item),
-                grid_elements,
-                width=ITEM_DELETE_MENU_WIDTH,
-            )
-        )
-        self.selected_item = None
+    def throw_selected(self) -> None:
+        return throw_selected_item(self)
 
     def try_sell_selected_item(self) -> None:
         """
@@ -1839,101 +1797,16 @@ class LevelScene(Scene):
             )
         )
 
-    def unequip_selected_item(self) -> None:
-        """
-        Unequip the selected item of the active character if possible
-        """
-        self.menu_manager.close_active_menu()
-        unequipped = self.selected_player.unequip(self.selected_item)
-        result_message = (
-            STR_THE_ITEM_CANNOT_BE_UNEQUIPPED_NOT_ENOUGH_SPACE_IN_UR_INVENTORY
-        )
-        if unequipped:
-            result_message = STR_THE_ITEM_HAS_BEEN_UNEQUIPPED
+    def unequip(self):
+        return unequip_selected_item(self)
 
-            # Update equipment screen content
-            new_equipment_menu = menu_creator_manager.create_equipment_menu(self,
-                interact_item, self.selected_player.equipments
-            )
-            # Update the inventory menu (i.e. first menu backward)
-            self.menu_manager.close_active_menu()
-            self.menu_manager.open_menu(new_equipment_menu)
-        element_grid = [
-            [
-                TextElement(
-                    result_message, font=fonts["ITEM_DESC_FONT"], margin=(20, 0, 20, 0)
-                )
-            ]
-        ]
-        self.menu_manager.open_menu(
-            InfoBox(
-                str(self.selected_item),
-                element_grid,
-                width=ITEM_INFO_MENU_WIDTH,
-            )
-        )
 
-    def equip_selected_item(self) -> None:
-        """
-        Equip the selected item of the active character if possible
-        """
-        self.menu_manager.close_active_menu()
-        # Try to equip the item
-        return_equipped: int = self.selected_player.equip(self.selected_item)
-        if return_equipped == -1:
-            # Item can't be equipped by this player
-            result_message = (
-                f_THIS_ITEM_CANNOT_BE_EQUIPPED_PLAYER_DOESNT_SATISFY_THE_REQUIREMENTS(
-                    self.selected_player
-                )
-            )
-        else:
-            # In this case returned value is > 0, item has been equipped
-            result_message = STR_THE_ITEM_HAS_BEEN_EQUIPPED
-            if return_equipped == 1:
-                result_message += (
-                    STR_PREVIOUS_EQUIPPED_ITEM_HAS_BEEN_ADDED_TO_YOUR_INVENTORY
-                )
+    def equip(self):
+        return equip_selected_item(self)
 
-            # Inventory has changed
-            self.refresh_inventory()
-        element_grid = [
-            [
-                TextElement(
-                    result_message, font=fonts["ITEM_DESC_FONT"], margin=(20, 0, 20, 0)
-                )
-            ]
-        ]
-        self.menu_manager.open_menu(
-            InfoBox(
-                str(self.selected_item),
-                element_grid,
-                width=ITEM_INFO_MENU_WIDTH,
-            )
-        )
 
-    def use_selected_item(self) -> None:
-        """
-        Handle the use of the selected item if possible.
-        Remove it if it can't be used anymore.
-        """
-        # Try to use the object
-        used, result_messages = self.selected_player.use_item(self.selected_item)
-        # Inventory display is update if object has been used
-        if used:
-            self.menu_manager.close_active_menu()
-            self.refresh_inventory()
-        entries = [
-            [TextElement(message, font=fonts["ITEM_DESC_FONT"], margin=(10, 0, 10, 0))]
-            for message in result_messages
-        ]
-        self.menu_manager.open_menu(
-            InfoBox(
-                str(self.selected_item),
-                entries,
-                width=ITEM_INFO_MENU_WIDTH,
-            )
-        )
+    def use_selected(self) -> None:
+        return use_selected_item(self)
 
     def refresh_inventory(self) -> None:
         """
@@ -1951,13 +1824,8 @@ class LevelScene(Scene):
         # Update inventory menu
         self.menu_manager.replace_given_menu(INVENTORY_MENU_ID, new_inventory_menu)
 
-    def open_selected_item_description(self) -> None:
-        """
-        Handle the opening of the selected item description pop-up
-        """
-        self.menu_manager.open_menu(
-            menu_creator_manager.create_item_description_menu(self.selected_item)
-        )
+    def open_selected_item(self):
+        return open_selected_item_description(self)
 
     def open_skill_description(self, skill: Skill) -> None:
         """

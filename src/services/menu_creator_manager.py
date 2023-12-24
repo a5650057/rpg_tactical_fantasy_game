@@ -128,7 +128,6 @@ def create_shop_menu(
 
 
 def create_inventory_menu(
-        level,
     interaction_callback: Callable,
     items: Sequence[Item],
     gold: int,
@@ -163,13 +162,13 @@ def create_inventory_menu(
         )
         if is_to_sell:
             item_button.callback = (
-                lambda button=item_button, item_reference=item: interaction_callback(level,
+                lambda button=item_button, item_reference=item: interaction_callback(
                     item_reference, button
                 )
             )
         else:
             item_button.callback = (
-                lambda button=item_button, item_reference=item: interaction_callback(level,
+                lambda button=item_button, item_reference=item: interaction_callback(
                     item_reference, button, is_equipped=False
                 )
             )
@@ -202,7 +201,7 @@ def create_inventory_menu(
     )
 
 
-def create_equipment_menu(level,
+def create_equipment_menu(
     interaction_callback: Callable, equipments: Sequence[Equipment]
 ) -> InfoBox:
     """
@@ -231,7 +230,7 @@ def create_equipment_menu(level,
                 background_path="imgs/interface/item_frame.png",
                 text_color=BLACK,
             )
-            element.callback = lambda equipment_reference=equipment, button_linked=element: interaction_callback(level,
+            element.callback = lambda equipment_reference=equipment, button_linked=element: interaction_callback(
                 equipment_reference, button_linked, is_equipped=True
             )
             row.append(element)

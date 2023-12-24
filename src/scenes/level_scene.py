@@ -220,6 +220,9 @@ class LevelScene(Scene):
         self.directory: str = directory
         self.number: int = number
 
+        self.intemHandler = ItemHandlerClass(self)
+        self.inputHandler = InputHandlerClass(self)
+
         self.tmx_data = pytmx.load_pygame(self.directory + "map.tmx")
         self.tmx_map_properties_data = pytmx.load_pygame(
             DATA_PATH + self.directory + "map_properties.tmx"
@@ -943,7 +946,7 @@ class LevelScene(Scene):
             text_color=BLACK,
         )
         item_element.callback = (
-            lambda button=item_element, item_reference=item: interact_item(self,
+            lambda button=item_element, item_reference=item: self.intemHandler.interact_item(
                 item_reference, button, is_equipped=False
             )
         )
@@ -1151,7 +1154,7 @@ class LevelScene(Scene):
             self.menu_manager.open_menu(
                 menu_creator_manager.create_trade_menu(self,
                     {
-                        "interact_item": interact_trade_item,
+                        "interact_item":self.intemHandler.interact_trade_item,
                         "send_gold": self.send_gold,
                     },
                     self.selected_player,
@@ -1595,7 +1598,7 @@ class LevelScene(Scene):
         """
         equipments = list(self.selected_player.equipments)
         self.menu_manager.open_menu(
-            menu_creator_manager.create_equipment_menu(self,interact_item, equipments),
+            menu_creator_manager.create_equipment_menu(self.intemHandler.interact_item, equipments),
         )
         pygame.mixer.Sound.play(self.armor_sfx)
 
@@ -1611,8 +1614,8 @@ class LevelScene(Scene):
             list(self.selected_player.items) + [None] * free_spaces
         )
         self.menu_manager.open_menu(
-            menu_creator_manager.create_inventory_menu(self,
-                interact_item, items, self.selected_player.gold
+            menu_creator_manager.create_inventory_menu(
+                self.intemHandler.interact_item, items, self.selected_player.gold
             )
         )
         pygame.mixer.Sound.play(self.inventory_sfx)
@@ -1668,7 +1671,7 @@ class LevelScene(Scene):
 
             new_trade_menu = menu_creator_manager.create_trade_menu(self,
                 {
-                    "interact_item": interact_trade_item,
+                    "interact_item": self.intemHandler.interact_trade_item,
                     "send_gold": self.send_gold,
                 },
                 first_player,
@@ -1724,7 +1727,7 @@ class LevelScene(Scene):
         self.menu_manager.open_menu(
             menu_creator_manager.create_trade_menu(self,
                 {
-                    "interact_item": interact_trade_item,
+                    "interact_item": self.intemHandler.interact_trade_item,
                     "send_gold": self.send_gold,
                 },
                 first_player,
@@ -1733,7 +1736,7 @@ class LevelScene(Scene):
         )
 
     def throw_selected(self) -> None:
-        return throw_selected_item(self)
+        return self.intemHandler.throw_selected_item()
 
     def try_sell_selected_item(self) -> None:
         """
@@ -1798,15 +1801,15 @@ class LevelScene(Scene):
         )
 
     def unequip(self):
-        return unequip_selected_item(self)
+        return self.intemHandler.unequip_selected_item()
 
 
     def equip(self):
-        return equip_selected_item(self)
+        return self.intemHandler.equip_selected_item()
 
 
     def use_selected(self) -> None:
-        return use_selected_item(self)
+        return self.intemHandler.use_selected_item()
 
     def refresh_inventory(self) -> None:
         """
@@ -1818,14 +1821,14 @@ class LevelScene(Scene):
         items: list[Optional[Item]] = (
             list(self.selected_player.items) + [None] * free_spaces
         )
-        new_inventory_menu = menu_creator_manager.create_inventory_menu(self,
-            interact_item, items, self.selected_player.gold
+        new_inventory_menu = menu_creator_manager.create_inventory_menu(
+            self.intemHandler.interact_item, items, self.selected_player.gold
         )
         # Update inventory menu
         self.menu_manager.replace_given_menu(INVENTORY_MENU_ID, new_inventory_menu)
 
     def open_selected_item(self):
-        return open_selected_item_description(self)
+        return self.intemHandler.open_selected_item_description()
 
     def open_skill_description(self, skill: Skill) -> None:
         """
@@ -1885,7 +1888,7 @@ class LevelScene(Scene):
         position -- the position of the mouse
         """
         # No event if there is an animation or if it is not player turn
-        return click(self,button,position,EntityTurn,LevelStatus)
+        return self.inputHandler.click(button,position,EntityTurn,LevelStatus)
 
 
     def button_down(self, button: int, position: Position) -> None:
@@ -1897,7 +1900,7 @@ class LevelScene(Scene):
         (1 for left button, 2 for middle button, 3 for right button)
         position -- the position of the mouse
         """
-        button_down(self,button,position,EntityTurn)
+        self.inputHandler.button_down(button,position,EntityTurn)
 
 
     def key_down(self, keyname):
@@ -1907,7 +1910,7 @@ class LevelScene(Scene):
         Keyword arguments:
         keyname -- an integer value representing which key button is down
         """
-        key_down(self,keyname)
+        self.inputHandler.key_down(keyname)
 
     def motion(self, position: Position) -> None:
         """
@@ -1916,7 +1919,7 @@ class LevelScene(Scene):
         Keyword arguments:
         position -- the position of the mouse
         """
-        motion(self,position)
+        self.inputHandler.motion(position)
 
     def _compute_active_screen_part(self) -> pygame.Surface:
         """

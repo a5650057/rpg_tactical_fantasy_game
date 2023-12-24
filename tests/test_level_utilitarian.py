@@ -38,7 +38,7 @@ class TestLevel(unittest.TestCase):
         # Store the current menu before making trade
         self.level.menu_manager.reduce_active_menu()
         self.level.interact(active_player, other_player, pygame.Vector2())
-        self.level.interact_trade_item(
+        self.level.intemHandler.interact_trade_item(
             item, Button(), (active_player, other_player), is_active_the_sender
         )
         self.level.trade_item(active_player, other_player, is_active_the_sender)
@@ -126,7 +126,7 @@ class TestLevel(unittest.TestCase):
         self.assertTrue(item in receiver_player.items)
 
         # Cancel active player turn
-        right_click(self.level)
+        self.level.inputHandler.right_click()
 
         self.assertTrue(item in active_player.items)
         self.assertFalse(item in receiver_player.items)
@@ -162,7 +162,7 @@ class TestLevel(unittest.TestCase):
         self.assertFalse(item in sender_player.items)
 
         # Cancel active player turn
-        right_click(self.level)
+        self.level.inputHandler.right_click()
 
         self.assertFalse(item in active_player.items)
         self.assertTrue(item in sender_player.items)
@@ -204,7 +204,7 @@ class TestLevel(unittest.TestCase):
         self.assertTrue(second_item in trade_partner_player.items)
 
         # Cancel active player turn
-        right_click(self.level)
+        self.level.inputHandler.right_click()
 
         self.assertFalse(item in active_player.items)
         self.assertTrue(item in trade_partner_player.items)
@@ -265,7 +265,7 @@ class TestLevel(unittest.TestCase):
                 [],
             )
         )
-        right_click(self.level)
+        self.level.inputHandler.right_click()
 
         self.assertTrue(item in active_player.items)
         self.assertFalse(item in trade_partner_player.items)
@@ -298,7 +298,7 @@ class TestLevel(unittest.TestCase):
         self.level.selected_player = raimund_player
         self.level.selected_item = item_to_be_thrown
 
-        self.level.throw_selected_item()
+        self.level.intemHandler.throw_selected_item()
 
         self.assertNotIn(item_to_be_thrown, raimund_player.items)
         self.assertIn(other_item, raimund_player.items)
@@ -321,7 +321,7 @@ class TestLevel(unittest.TestCase):
         self.level.selected_player = raimund_player
         self.level.selected_item = equipment_to_be_thrown
 
-        self.level.throw_selected_item()
+        self.level.intemHandler.throw_selected_item()
 
         self.assertNotIn(equipment_to_be_thrown, raimund_player.equipments)
         self.assertIn(other_equipment, raimund_player.equipments)
@@ -344,7 +344,7 @@ class TestLevel(unittest.TestCase):
         self.level.selected_player = raimund_player
         self.level.selected_item = equipment_to_be_thrown_from_inventory
 
-        self.level.throw_selected_item()
+        self.level.intemHandler.throw_selected_item()
 
         self.assertNotIn(equipment_to_be_thrown_from_inventory, raimund_player.items)
         self.assertIn(equipped_version_of_the_item, raimund_player.equipments)

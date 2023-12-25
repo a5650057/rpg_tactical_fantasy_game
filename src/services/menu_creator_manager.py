@@ -283,7 +283,7 @@ def create_trade_menu(level,
                 )
                 item_button.callback = lambda button=item_button, item_reference=items[
                     i * 2 + j
-                ], owner=owner_i: buttons_callback["interact_item"](level,
+                ], owner=owner_i: buttons_callback["interact_item"](
                     item_reference,
                     button,
                     [first_player, second_player],
